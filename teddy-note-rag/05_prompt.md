@@ -1,32 +1,32 @@
 # Chapter 05. 프롬프트
 
 ## 프롬프트
-- 프롬프트 단계는 리트리버(retriever)에서 검색된 문서들을 바탕으로 언어 모델이 사용할 질문이나 명령을 생성하는 과장
+- 프롬프트 단계는 리트리버(retriever)에서 검색된 문서들을 바탕으로 언어 모델이 사용할 질문이나 명령을 생성하는 과정이다.
 
 ## 프롬프트 템플릿
-- AI 모델과의 상호작용을 표준화하고 효율적으로 만들어 주는 구조화 된 텍스트 형식
-- 사전에 정의된 이 템플릿은 모델에게 전달할 지시 사항, 컨텍스트, 제약 조건 등을 담고 있으며, 변수를 포함하여 다양항 입력 값에 대해 일관된 출력을 생성
-- 프롬프트 템플릿의 구조는 지시 사항(instruction), 사용자 입력 질문(Question), 검색된 정보인 문맥(Context)로 구성
+- AI 모델과의 상호작용을 표준화하고 효율적으로 만들어 주는 구조화된 텍스트 형식이다.
+- 사전에 정의된 이 템플릿은 모델에게 전달할 지시 사항, 컨텍스트, 제약 조건 등을 담고 있으며, 변수를 포함하여 다양한 입력값에 대해 일관된 출력을 생성한다.
+- 프롬프트 템플릿의 구조는 지시 사항(instruction), 사용자 입력 질문(Question), 검색된 정보인 문맥(Context)으로 구성된다.
 - from_template() 메서드를 사용하여 PromptTemplate 객체를 생성하는 방법과 PromptTemplate 객체 생성과 동시에 프롬프트를 생성하는 방법이 있다.
 
 ## 프롬프트 템플릿 생성 및 사용
 ```python
 template = "{country}의 수도는 어디인가요?"
 ```
-- 프롬프트 템플릿의 변수는 중괄호("{}")로 감싸서 표현
+- 프롬프트 템플릿의 변수는 중괄호("{}")로 감싸서 표현한다.
 
 ```python
 prompt = PromptTemplate.from_template(template)
 ```
-- from_template 메서드를 이용하여 PromptTempate 객체 생성
+- from_template 메서드를 이용하여 PromptTemplate 객체를 생성한다.
 
 ```python
 prompt = prompt.format(country="대한민국")
 print(prompt)
 
-# 출력 - '대한민국 수도는 어디인가요?'
+# 출력 - '대한민국의 수도는 어디인가요?'
 ```
-- 작업 중간에 결과물을 확인하고 싶을때 format() 메서드 사용
+- 작업 중간에 결과물을 확인하고 싶을 때 format() 메서드를 사용한다.
 
 ```python
 chain = prompt | llm # chain 생성
@@ -35,7 +35,7 @@ print(chain.invoke("대한민국").content)
 
 # 출력 - '대한민국의 수도는 서울입니다.'
 ```
-- 체인과 연결
+- 체인과 연결한다.
 
 ## 또 다른 생성 방식
 ```python
@@ -47,8 +47,8 @@ prompt = PromptTemplate(
     input_variables=["country"],
 )
 ```
-- 템플릿 문자열을 정의 후 객체 생성 시 template과 input_variables를 직접 지정
-- input_variables에 country 변수를 넣었기 때문에 나중에 이 변수가 제대로 전달되지 않으면 오류를 발생시켜 누락이나 잘못된 이름으로 전달되는 실수를 방지
+- 템플릿 문자열을 정의한 후 객체 생성 시 template과 input_variables를 직접 지정한다.
+- input_variables에 country 변수를 넣었기 때문에 나중에 이 변수가 제대로 전달되지 않으면 오류를 발생시켜 누락이나 잘못된 이름으로 전달되는 실수를 방지한다.
 
 ### partial_variables
 ```python
@@ -64,20 +64,20 @@ prompt = PromptTemplate(
 
 prompt.partial(country2="캐나다") # 이미 생성된 프롬프트에 바인딩
 ```
-- 보통 두개 이상의 변수를 처리하는 경우 일부 변수를 미리 확정지을 필요가 있을 때 유용
-- 특정 변수를 임의의 값으로 미리 바인딩(고정)하기 위함
-- dictionary 형태로 전달
-- 이미 생성된 프롬프트에는 partial() 메서드를 사용해 바인딩 시킬 수 있다.
-- 위와같이 바인딩된 값도 invoke()시 새로운 값을 넣어주면 대체될 수 있다.
+- 보통 두 개 이상의 변수를 처리하는 경우 일부 변수를 미리 확정할 필요가 있을 때 유용하다.
+- 특정 변수를 임의의 값으로 미리 바인딩(고정)하기 위함이다.
+- dictionary 형태로 전달한다.
+- 이미 생성된 프롬프트에는 partial() 메서드를 사용해 바인딩할 수 있다.
+- 위와 같이 바인딩된 값도 invoke() 시 새로운 값을 넣어주면 대체될 수 있다.
 
 ## 부분 변수
 ```python
-# 오눌 날짜를 가져오는 함수 선언
+# 오늘 날짜를 가져오는 함수 선언
 def get_today():
     return datetime.now().strftime("%B %d")
 
 prompt = PromptTemplate(
-    template="오늘의 날짜는 {today}입니다. 오늘이 생일인 유명인 {n}명을 나열해 주세요. 생년월일을 표기해주세요.",
+    template="오늘의 날짜는 {today}입니다. 오늘이 생일인 유명인 {n}명을 나열해 주세요. 생년월일을 표기해 주세요.",
     input_variables=["n"],
     partial_variables={
         "today": get_today # dictionary 형태로 전달
@@ -85,8 +85,8 @@ prompt = PromptTemplate(
 )
 ```
 
-- 주로 함수를 사용하여 프롬프트의 일부를 미리 설정하는 것
-- 날짜나 시간처럼 항상 동일한 방식으로 처리해야 하는 변수가 있을때 유용
+- 주로 함수를 사용하여 프롬프트의 일부를 미리 설정한다.
+- 날짜나 시간처럼 항상 동일한 방식으로 처리해야 하는 변수가 있을 때 유용하다.
 
 ## YAML 파일로부터 프롬프트 템플릿 로드
 ```yaml
@@ -97,11 +97,11 @@ input_variables: ["fruit"]
 - 프롬프트 템플릿을 사용할 때 프롬프트가 길어지면 소스코드 내의 문자열이 너무 길어져 관리하기 힘들 경우 YAML 파일에 별도로 저장하고 쉽게 관리할 수 있다.
 
 ```python
-from langcahin_core.prompts import load_prompt
+from langchain_core.prompts import load_prompt
 
 prompt = load_prompt("prompt/fruit_color.yaml", encoding="utf-8")
 ```
-- langchain_core.prompts 모듈의 load_prompt() 함수를 통해 로드
+- langchain_core.prompts 모듈의 load_prompt() 함수를 통해 로드한다.
 
 
 ## ChatPromptTemplate
@@ -124,9 +124,9 @@ chain = chat_template | llm
 print(chain.invoke({"name": "Teddy", "user_input": "당신의 이름은 무엇입니까?"}).content)
 # 출력 - '제 이름은 Teddy입니다. 저랑 함께 이야기 나누어 보세요!'
 ```
-- ChatPromptTemplate를 사용하면 프롬프트 템플릿보다 더 자연스럽고 좋은 답변을 얻을 수 있다.
+- ChatPromptTemplate을 사용하면 프롬프트 템플릿보다 더 자연스럽고 좋은 답변을 얻을 수 있다.
 - AI와 사용자가 대화를 주고받는 형식으로 프롬프트를 구성하므로 더 유연하고 자연스러운 결과를 내놓는다.
-- tuple 형식으로 구성, (role, message) 형태로 구성하여 리스트로 생성할 수 있다.
+- (role, message) 형태의 tuple로 구성하여 리스트로 생성할 수 있다.
 - 역할(role)에는 system, human, ai가 있으며 메시지를 구성할 때 이 셋 중 하나는 반드시 넣어야 한다.
 
 
@@ -138,7 +138,7 @@ chat_prompt = ChatPromptTemplate.from_messages(
             "system",
             "당신은 요약 전문 AI 어시스턴트입니다. 당신의 임무는 주요 키워드로 대화를 요약하는 것입니다.",
         ),
-        MessagesPlaceholder(variable_name="conversation),
+        MessagesPlaceholder(variable_name="conversation"),
         ("human", "지금까지의 대화를 {word_count} 단어로 요약합니다."),
     ]
 )
@@ -208,10 +208,10 @@ flowchart TD
 </div>
 </details>
 
-- 대화에서 아직 확정된 메시지는 아니지만 나중에 채워질 메시지를 채우기 위해 임시로 확보한 자리
+- 대화에서 아직 확정된 메시지는 아니지만 나중에 채워질 메시지를 채우기 위해 임시로 확보한 자리이다.
 - 모든 대화 내용이 확정되기 전이므로 MessagesPlaceholder에 저장해 두었다가 나중에 대화 기록을 분석 및 다른 질문에 활용할 수 있다.
-- 주로 멀티턴 대화에서 이전 대화 내용을 LLM의 프롬프트에 삽입하기 위해 사용
-- 직접 저장하는 것은 아님, 외부에 관리하는(memory, db 등) 대화 내용을 MessagesPlaceholder를 통해 전달
+- 주로 멀티턴 대화에서 이전 대화 내용을 LLM의 프롬프트에 삽입하기 위해 사용한다.
+- 직접 저장하는 것은 아니다. 외부에서 관리하는(memory, db 등) 대화 내용을 MessagesPlaceholder를 통해 전달한다.
 
 
 ## 퓨샷 프롬프트 템플릿
@@ -250,12 +250,12 @@ result = few_shot_prompt.invoke({
 print(result.to_string())
 ```
 - 복잡한 문맥이나 질문에 대한 답변을 처리할 때 효과적이다.
-- 기본적으로 원샷(One-shot)과 퓨삿(Few-shot)을 포함
-- 원샷은 하나의 답변 예시를, 퓨삿은 두 개 이상의 예시를 제공하는 방식
+- 기본적으로 원샷(One-shot)과 퓨샷(Few-shot)을 포함한다.
+- 원샷은 하나의 답변 예시를, 퓨샷은 두 개 이상의 예시를 제공하는 방식이다.
 
 
 ## 예제 선택기(ExampleSelector)
-- 질문과 유사한 예시만 선택해 프롬프트에 넣는 방식
+- 질문과 유사한 예시만 선택해 프롬프트에 넣는 방식이다.
 
 ### SemanticSimilarityExampleSelector
 ```python
@@ -303,9 +303,9 @@ result = prompt.invoke({
 
 print(result.to_string())
 ```
-- 입력된 질문과 의미가 가장 유사한 예시를 선택하는 방식
-- 예제를 저장해 두고 사용자의 질문이 들어오면 저장된 예시와 유사도 계산을 통해 가장 적합한 예제를 선택
-- k라는 매개변수를 통해 선택할 예시의 개수를 지정
+- 입력된 질문과 의미가 가장 유사한 예시를 선택하는 방식이다.
+- 예제를 저장해 두고 사용자의 질문이 들어오면 저장된 예시와 유사도 계산을 통해 가장 적합한 예제를 선택한다.
+- k라는 매개변수를 통해 선택할 예시의 개수를 지정한다.
 
 ### MaxMarginalRelevanceExampleSelector
 ```python
@@ -355,12 +355,12 @@ result = prompt.invoke({
 
 print(result.to_string())
 ```
-- 유사도뿐만 아니라 예시의 다양성까지 고려하여 선택하는 방식
+- 유사도뿐만 아니라 예시의 다양성까지 고려하여 선택하는 방식이다.
 - **MMR 알고리즘**
-    - 정보 검색과 문서 요약을 할 때, 다양성과 관련성을 모두 고려하여 결과를 선택하는 방법
-    - 위 알고리즘의 목표는 비슷한 내용이 반복되지 않도록 하면서도(다양성) 사용자가 찾고 있는 질문과 가장 잘 맞는(관련성) 정보를 제공
-    - **관련성(relavance)**: 사용자가 입력한 검색어나 주제와 문서가 얼마나 잘 맞는지를 평가하는 기준
-    - **다양성(diversity)**: 이미 선택된 문서와 다른 새로운 문서 간의 유사성을 계산, 비슷한 내용의 문서는 다시 선택되지 않도록 함
+    - 정보 검색과 문서 요약을 할 때, 다양성과 관련성을 모두 고려하여 결과를 선택하는 방법이다.
+    - 위 알고리즘의 목표는 비슷한 내용이 반복되지 않도록 하면서도(다양성) 사용자가 찾고 있는 질문과 가장 잘 맞는(관련성) 정보를 제공하는 것이다.
+    - **관련성(relevance)**: 사용자가 입력한 검색어나 주제와 문서가 얼마나 잘 맞는지를 평가하는 기준이다.
+    - **다양성(diversity)**: 이미 선택된 문서와 다른 새로운 문서 간의 유사성을 계산하여 비슷한 내용의 문서는 다시 선택되지 않도록 한다.
 
 ## FewShotChatMessagePromptTemplate
 ```python
@@ -440,16 +440,16 @@ print("\n=== LLM 응답 ===")
 print(response)
 ```
 
-- FewShotPromptTemplate과 매우 비슷하지만, ChatMessage라는 요소가 추가
-- ChatMessagePromptTemplate과 같이 지시 사항(instruction), 입력(input), 답변(answer)으로 구성
-- 선택된 예제를 Chat Model에게 적합한 메시지 형태로 만들어준다.
+- FewShotPromptTemplate과 매우 비슷하지만, ChatMessage라는 요소가 추가된다.
+- ChatMessagePromptTemplate과 같이 지시 사항(instruction), 입력(input), 답변(answer)으로 구성된다.
+- 선택된 예제를 Chat Model에게 적합한 메시지 형태로 만들어 준다.
 
 ## LangChain Hub에서 프롬프트 공유하기
-- LangChain Hub(LangSmith Hub)는 다른 사람이 만든 프롬프트를 가져다 쓰거나 내 프롬프트를 올려 공유할 수 있는 저장소
-- 프롬프트를 pull/push 할 때 `langchainhub` 패키지가 필요하다. (`pip install langchainhub`)
+- LangChain Hub(LangSmith Hub)는 다른 사람이 만든 프롬프트를 가져다 쓰거나 내 프롬프트를 올려 공유할 수 있는 저장소이다.
+- 프롬프트를 pull/push할 때 `langchainhub` 패키지가 필요하다. (`pip install langchainhub`)
 - 프롬프트 push, 비공개 프롬프트 pull 시에는 LangSmith API Key가 필요하다. (`LANGCHAIN_API_KEY` 또는 `LANGSMITH_API_KEY` 환경 변수)
 
-### 프롬프트 pull 하여 사용하기
+### 프롬프트 pull하여 사용하기
 ```python
 from langchain import hub
 from langchain_openai import ChatOpenAI
@@ -472,13 +472,13 @@ response = chain.invoke({
 })
 print(response)
 ```
-- `hub.pull("소유자/프롬프트이름")`으로 공개된 프롬프트를 가져온다. 가져온 결과는 PromptTemplate 또는 ChatPromptTemplate 객체
+- `hub.pull("소유자/프롬프트이름")`으로 공개된 프롬프트를 가져온다. 가져온 결과는 PromptTemplate 또는 ChatPromptTemplate 객체이다.
 - `rlm/rag-prompt`는 RAG에서 많이 쓰는 대표적인 공개 프롬프트로, `context`와 `question` 두 변수를 받는다.
-- 가져온 프롬프트는 직접 만든 프롬프트와 동일하게 `prompt | llm` 형태로 체인에 연결 가능
+- 가져온 프롬프트는 직접 만든 프롬프트와 동일하게 `prompt | llm` 형태로 체인에 연결할 수 있다.
 - 특정 버전을 고정하고 싶다면 `hub.pull("rlm/rag-prompt:커밋해시")`처럼 커밋 해시를 붙인다.
-- 사용 전에 `input_variables`와 템플릿을 확인하여 어떤 변수를 넘겨야 하는지 반드시 체크
+- 사용 전에 `input_variables`와 템플릿을 확인하여 어떤 변수를 넘겨야 하는지 반드시 확인한다.
 
-### 내 프롬프트 push 하여 공유하기
+### 내 프롬프트 push하여 공유하기
 ```python
 import os
 from langchain import hub
@@ -502,7 +502,7 @@ url = hub.push(
 )
 print(url)  # 업로드된 프롬프트 주소
 ```
-- `hub.push("내 핸들/프롬프트이름", 프롬프트객체)`로 업로드. 성공하면 Hub의 프롬프트 URL을 반환
-- 내 핸들(handle)은 LangSmith에서 설정한 사용자 이름이며, 처음 push 하려면 핸들을 먼저 만들어야 한다.
-- 같은 이름으로 다시 push 하면 새 커밋(버전)이 추가되어 변경 이력이 관리된다.
-- `new_repo_is_public`: 새로 만드는 저장소의 공개 여부, 실수로 공개되지 않도록 기본은 비공개(False)로 두고 확인 후 공개하는 것을 권장
+- `hub.push("내 핸들/프롬프트이름", 프롬프트객체)`로 업로드한다. 성공하면 Hub의 프롬프트 URL을 반환한다.
+- 내 핸들(handle)은 LangSmith에서 설정한 사용자 이름이며, 처음 push하려면 핸들을 먼저 만들어야 한다.
+- 같은 이름으로 다시 push하면 새 커밋(버전)이 추가되어 변경 이력이 관리된다.
+- `new_repo_is_public`: 새로 만드는 저장소의 공개 여부이다. 실수로 공개되지 않도록 기본은 비공개(False)로 두고 확인 후 공개하는 것을 권장한다.
