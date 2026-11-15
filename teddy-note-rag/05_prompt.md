@@ -11,63 +11,25 @@
 
 ## 프롬프트 템플릿 생성 및 사용
 ```python
+from langchain_core.prompts import PromptTemplate
+from langchain_openai import ChatOpenAI
+
+# 1. 템플릿 정의 및 객체 생성
 template = "{country}의 수도는 어디인가요?"
-```
-
-<details>
-<summary>위 예시 코드 흐름도 보기</summary>
-
-```mermaid
-flowchart TD
-    A["country 변수를 포함한 문자열 정의"] --> B["template 문자열 생성"]
-```
-
-</details>
-
-- 프롬프트 템플릿의 변수는 중괄호("{}")로 감싸서 표현한다.
-
-```python
 prompt = PromptTemplate.from_template(template)
-```
 
-<details>
-<summary>위 예시 코드 흐름도 보기</summary>
-
-```mermaid
-flowchart TD
-    A["template 문자열"] --> B["PromptTemplate.from_template()"]
-    B --> C["country를 입력 변수로 가진 PromptTemplate 생성"]
-```
-
-</details>
-
-- from_template 메서드를 이용하여 PromptTemplate 객체를 생성한다.
-
-```python
-prompt = prompt.format(country="대한민국")
-print(prompt)
-
+# 2. 변수 치환 결과 확인
+formatted_prompt = prompt.format(country="대한민국")
+print(formatted_prompt)
 # 출력 - '대한민국의 수도는 어디인가요?'
-```
 
-<details>
-<summary>위 예시 코드 흐름도 보기</summary>
+# 3. 모델과 체인 연결
+llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+chain = prompt | llm
 
-```mermaid
-flowchart TD
-    A["PromptTemplate과 country=대한민국"] --> B["format(): 변수 치환"]
-    B --> C["대한민국의 수도는 어디인가요? 문자열 생성"]
-```
-
-</details>
-
-- 작업 중간에 결과물을 확인하고 싶을 때 format() 메서드를 사용한다.
-
-```python
-chain = prompt | llm # chain 생성
-
-print(chain.invoke("대한민국").content)
-
+# 4. 실행
+result = chain.invoke({"country": "대한민국"})
+print(result.content)
 # 출력 - '대한민국의 수도는 서울입니다.'
 ```
 
@@ -76,16 +38,22 @@ print(chain.invoke("대한민국").content)
 
 ```mermaid
 flowchart TD
-    A["PromptTemplate 객체인 prompt"] --> B["prompt와 llm으로 체인 구성"]
-    C["chain.invoke(): 대한민국"] --> D["country 변수에 입력값 적용"]
-    B --> D
-    D --> E["ChatOpenAI: 완성된 프롬프트로 모델 호출"]
-    E --> F["AIMessage: 수도에 대한 응답 생성"]
+    A["country 변수를 포함한 template 문자열 정의"] --> B["PromptTemplate.from_template(): 템플릿 객체 생성"]
+    B --> C["format(country=대한민국): 변수 치환"]
+    C --> D["formatted_prompt: 대한민국의 수도는 어디인가요? 문자열 생성"]
+    B --> E["prompt와 llm으로 체인 구성"]
+    Q["chain.invoke(): country=대한민국 전달"] --> F["템플릿에 입력값을 적용하여 프롬프트 생성"]
+    E --> F
+    F --> G["ChatOpenAI 호출"]
+    G --> H["AIMessage: 대한민국의 수도에 대한 응답 생성"]
 ```
 
 </details>
 
-- 체인과 연결한다.
+- 프롬프트 템플릿의 변수는 중괄호("{}")로 감싸서 표현한다.
+- from_template() 메서드를 이용하여 PromptTemplate 객체를 생성한다.
+- 작업 중간에 변수 치환 결과를 확인하고 싶을 때 format() 메서드를 사용한다. 반환된 문자열은 formatted_prompt에 저장하여 prompt를 템플릿 객체로 유지한다.
+- 템플릿을 모델과 연결하고 invoke()에 입력값을 전달하여 응답을 생성한다.
 
 ## 또 다른 생성 방식
 ```python
@@ -97,18 +65,6 @@ prompt = PromptTemplate(
     input_variables=["country"],
 )
 ```
-
-<details>
-<summary>위 예시 코드 흐름도 보기</summary>
-
-```mermaid
-flowchart TD
-    A["template 문자열과 input_variables 정의"] --> B["PromptTemplate 생성자 호출"]
-    B --> C["country 입력 변수를 가진 템플릿 객체 생성"]
-```
-
-</details>
-
 - 템플릿 문자열을 정의한 후 객체 생성 시 template과 input_variables를 직접 지정한다.
 - input_variables에 country 변수를 넣었기 때문에 나중에 이 변수가 제대로 전달되지 않으면 오류를 발생시켜 누락이나 잘못된 이름으로 전달되는 실수를 방지한다.
 
@@ -126,18 +82,6 @@ prompt = PromptTemplate(
 
 prompt.partial(country2="캐나다") # 이미 생성된 프롬프트에 바인딩
 ```
-
-<details>
-<summary>위 예시 코드 흐름도 보기</summary>
-
-```mermaid
-flowchart TD
-    A["country1 입력 변수와 country2=미국"] --> B["PromptTemplate 생성"]
-    B --> C["partial(country2=캐나다) 호출"]
-    C --> D["country2가 캐나다로 바인딩된 새 템플릿 반환"]
-```
-
-</details>
 
 - 보통 두 개 이상의 변수를 처리하는 경우 일부 변수를 미리 확정할 필요가 있을 때 유용하다.
 - 특정 변수를 임의의 값으로 미리 바인딩(고정)하기 위함이다.
@@ -159,21 +103,6 @@ prompt = PromptTemplate(
     }
 )
 ```
-
-<details>
-<summary>위 예시 코드 흐름도 보기</summary>
-
-```mermaid
-flowchart TD
-    A["get_today 함수 정의"] --> B["partial_variables에 함수 등록"]
-    C["today와 n을 포함한 템플릿"] --> D["PromptTemplate 생성"]
-    B --> D
-    D --> E["날짜 함수를 부분 변수로 가진 템플릿 객체 생성"]
-```
-
-</details>
-
-
 - 주로 함수를 사용하여 프롬프트의 일부를 미리 설정한다.
 - 날짜나 시간처럼 항상 동일한 방식으로 처리해야 하는 변수가 있을 때 유용하다.
 
@@ -183,17 +112,6 @@ _type: "prompt"
 template: "{fruit}의 색깔이 뭐야?"
 input_variables: ["fruit"]
 ```
-
-<details>
-<summary>위 예시 코드 흐름도 보기</summary>
-
-```mermaid
-flowchart TD
-    A["_type, template, input_variables 정의"] --> B["YAML 프롬프트 설정 생성"]
-```
-
-</details>
-
 - 프롬프트 템플릿을 사용할 때 프롬프트가 길어지면 소스코드 내의 문자열이 너무 길어져 관리하기 힘들 경우 YAML 파일에 별도로 저장하고 쉽게 관리할 수 있다.
 
 ```python
@@ -201,19 +119,6 @@ from langchain_core.prompts import load_prompt
 
 prompt = load_prompt("prompt/fruit_color.yaml", encoding="utf-8")
 ```
-
-<details>
-<summary>위 예시 코드 흐름도 보기</summary>
-
-```mermaid
-flowchart TD
-    A["prompt/fruit_color.yaml"] --> B["load_prompt(): UTF-8로 파일 읽기"]
-    B --> C["YAML 설정을 프롬프트 객체로 변환"]
-    C --> D["fruit 입력 변수를 가진 PromptTemplate 반환"]
-```
-
-</details>
-
 - langchain_core.prompts 모듈의 load_prompt() 함수를 통해 로드한다.
 
 
