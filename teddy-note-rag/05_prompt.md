@@ -13,11 +13,34 @@
 ```python
 template = "{country}의 수도는 어디인가요?"
 ```
+
+<details>
+<summary>위 예시 코드 흐름도 보기</summary>
+
+```mermaid
+flowchart TD
+    A["country 변수를 포함한 문자열 정의"] --> B["template 문자열 생성"]
+```
+
+</details>
+
 - 프롬프트 템플릿의 변수는 중괄호("{}")로 감싸서 표현한다.
 
 ```python
 prompt = PromptTemplate.from_template(template)
 ```
+
+<details>
+<summary>위 예시 코드 흐름도 보기</summary>
+
+```mermaid
+flowchart TD
+    A["template 문자열"] --> B["PromptTemplate.from_template()"]
+    B --> C["country를 입력 변수로 가진 PromptTemplate 생성"]
+```
+
+</details>
+
 - from_template 메서드를 이용하여 PromptTemplate 객체를 생성한다.
 
 ```python
@@ -26,6 +49,18 @@ print(prompt)
 
 # 출력 - '대한민국의 수도는 어디인가요?'
 ```
+
+<details>
+<summary>위 예시 코드 흐름도 보기</summary>
+
+```mermaid
+flowchart TD
+    A["PromptTemplate과 country=대한민국"] --> B["format(): 변수 치환"]
+    B --> C["대한민국의 수도는 어디인가요? 문자열 생성"]
+```
+
+</details>
+
 - 작업 중간에 결과물을 확인하고 싶을 때 format() 메서드를 사용한다.
 
 ```python
@@ -35,6 +70,21 @@ print(chain.invoke("대한민국").content)
 
 # 출력 - '대한민국의 수도는 서울입니다.'
 ```
+
+<details>
+<summary>위 예시 코드 흐름도 보기</summary>
+
+```mermaid
+flowchart TD
+    A["PromptTemplate 객체인 prompt"] --> B["prompt와 llm으로 체인 구성"]
+    C["chain.invoke(): 대한민국"] --> D["country 변수에 입력값 적용"]
+    B --> D
+    D --> E["ChatOpenAI: 완성된 프롬프트로 모델 호출"]
+    E --> F["AIMessage: 수도에 대한 응답 생성"]
+```
+
+</details>
+
 - 체인과 연결한다.
 
 ## 또 다른 생성 방식
@@ -47,6 +97,18 @@ prompt = PromptTemplate(
     input_variables=["country"],
 )
 ```
+
+<details>
+<summary>위 예시 코드 흐름도 보기</summary>
+
+```mermaid
+flowchart TD
+    A["template 문자열과 input_variables 정의"] --> B["PromptTemplate 생성자 호출"]
+    B --> C["country 입력 변수를 가진 템플릿 객체 생성"]
+```
+
+</details>
+
 - 템플릿 문자열을 정의한 후 객체 생성 시 template과 input_variables를 직접 지정한다.
 - input_variables에 country 변수를 넣었기 때문에 나중에 이 변수가 제대로 전달되지 않으면 오류를 발생시켜 누락이나 잘못된 이름으로 전달되는 실수를 방지한다.
 
@@ -64,6 +126,19 @@ prompt = PromptTemplate(
 
 prompt.partial(country2="캐나다") # 이미 생성된 프롬프트에 바인딩
 ```
+
+<details>
+<summary>위 예시 코드 흐름도 보기</summary>
+
+```mermaid
+flowchart TD
+    A["country1 입력 변수와 country2=미국"] --> B["PromptTemplate 생성"]
+    B --> C["partial(country2=캐나다) 호출"]
+    C --> D["country2가 캐나다로 바인딩된 새 템플릿 반환"]
+```
+
+</details>
+
 - 보통 두 개 이상의 변수를 처리하는 경우 일부 변수를 미리 확정할 필요가 있을 때 유용하다.
 - 특정 변수를 임의의 값으로 미리 바인딩(고정)하기 위함이다.
 - dictionary 형태로 전달한다.
@@ -85,6 +160,20 @@ prompt = PromptTemplate(
 )
 ```
 
+<details>
+<summary>위 예시 코드 흐름도 보기</summary>
+
+```mermaid
+flowchart TD
+    A["get_today 함수 정의"] --> B["partial_variables에 함수 등록"]
+    C["today와 n을 포함한 템플릿"] --> D["PromptTemplate 생성"]
+    B --> D
+    D --> E["날짜 함수를 부분 변수로 가진 템플릿 객체 생성"]
+```
+
+</details>
+
+
 - 주로 함수를 사용하여 프롬프트의 일부를 미리 설정한다.
 - 날짜나 시간처럼 항상 동일한 방식으로 처리해야 하는 변수가 있을 때 유용하다.
 
@@ -94,6 +183,17 @@ _type: "prompt"
 template: "{fruit}의 색깔이 뭐야?"
 input_variables: ["fruit"]
 ```
+
+<details>
+<summary>위 예시 코드 흐름도 보기</summary>
+
+```mermaid
+flowchart TD
+    A["_type, template, input_variables 정의"] --> B["YAML 프롬프트 설정 생성"]
+```
+
+</details>
+
 - 프롬프트 템플릿을 사용할 때 프롬프트가 길어지면 소스코드 내의 문자열이 너무 길어져 관리하기 힘들 경우 YAML 파일에 별도로 저장하고 쉽게 관리할 수 있다.
 
 ```python
@@ -101,6 +201,19 @@ from langchain_core.prompts import load_prompt
 
 prompt = load_prompt("prompt/fruit_color.yaml", encoding="utf-8")
 ```
+
+<details>
+<summary>위 예시 코드 흐름도 보기</summary>
+
+```mermaid
+flowchart TD
+    A["prompt/fruit_color.yaml"] --> B["load_prompt(): UTF-8로 파일 읽기"]
+    B --> C["YAML 설정을 프롬프트 객체로 변환"]
+    C --> D["fruit 입력 변수를 가진 PromptTemplate 반환"]
+```
+
+</details>
+
 - langchain_core.prompts 모듈의 load_prompt() 함수를 통해 로드한다.
 
 
@@ -124,6 +237,21 @@ chain = chat_template | llm
 print(chain.invoke({"name": "Teddy", "user_input": "당신의 이름은 무엇입니까?"}).content)
 # 출력 - '제 이름은 Teddy입니다. 저랑 함께 이야기 나누어 보세요!'
 ```
+
+<details>
+<summary>위 예시 코드 흐름도 보기</summary>
+
+```mermaid
+flowchart TD
+    A["system·human·ai 메시지 정의"] --> B["ChatPromptTemplate 생성"]
+    C["chain.invoke(): name과 user_input 전달"] --> D["변수 치환 및 대화 메시지 구성"]
+    B --> D
+    D --> E["ChatOpenAI 호출"]
+    E --> F["AIMessage: Teddy라는 이름을 포함한 응답 생성"]
+```
+
+</details>
+
 - ChatPromptTemplate을 사용하면 프롬프트 템플릿보다 더 자연스럽고 좋은 답변을 얻을 수 있다.
 - AI와 사용자가 대화를 주고받는 형식으로 프롬프트를 구성하므로 더 유연하고 자연스러운 결과를 내놓는다.
 - (role, message) 형태의 tuple로 구성하여 리스트로 생성할 수 있다.
@@ -161,8 +289,7 @@ chain.invoke(
 )
 ```
 <details>
-<summary>위 예시 코드 흐름도</summary>
-<div markdown="1">
+<summary>위 예시 코드 흐름도 보기</summary>
 
 ```mermaid
 flowchart TD
@@ -205,7 +332,6 @@ flowchart TD
     style H fill:#DCFCE7,stroke:#16A34A,color:#166534
 ```
 
-</div>
 </details>
 
 - 대화에서 아직 확정된 메시지는 아니지만 나중에 채워질 메시지를 채우기 위해 임시로 확보한 자리이다.
@@ -249,6 +375,20 @@ result = few_shot_prompt.invoke({
 
 print(result.to_string())
 ```
+
+<details>
+<summary>위 예시 코드 흐름도 보기</summary>
+
+```mermaid
+flowchart TD
+    A["감정 분류 예시와 example_prompt"] --> B["예시를 입력·출력 문자열로 변환"]
+    C["invoke(): 오늘 기분이 너무 좋아!"] --> D["prefix·예시·suffix 결합 및 입력 치환"]
+    B --> D
+    D --> E["StringPromptValue: 감정 분류 프롬프트 생성"]
+```
+
+</details>
+
 - 복잡한 문맥이나 질문에 대한 답변을 처리할 때 효과적이다.
 - 기본적으로 원샷(One-shot)과 퓨샷(Few-shot)을 포함한다.
 - 원샷은 하나의 답변 예시를, 퓨샷은 두 개 이상의 예시를 제공하는 방식이다.
@@ -303,6 +443,23 @@ result = prompt.invoke({
 
 print(result.to_string())
 ```
+
+<details>
+<summary>위 예시 코드 흐름도 보기</summary>
+
+```mermaid
+flowchart TD
+    A["분류 예시"] --> B["OpenAIEmbeddings로 임베딩 생성"]
+    B --> C["Chroma에 예시 저장"]
+    D["prompt.invoke(): 환불 문의"] --> E["질문 임베딩 생성 및 유사도 검색"]
+    C --> E
+    E --> F["유사한 예시 3개 선택"]
+    F --> G["example_prompt로 예시 변환"]
+    G --> H["prefix·예시·질문을 결합한 StringPromptValue 생성"]
+```
+
+</details>
+
 - 입력된 질문과 의미가 가장 유사한 예시를 선택하는 방식이다.
 - 예제를 저장해 두고 사용자의 질문이 들어오면 저장된 예시와 유사도 계산을 통해 가장 적합한 예제를 선택한다.
 - k라는 매개변수를 통해 선택할 예시의 개수를 지정한다.
@@ -355,6 +512,22 @@ result = prompt.invoke({
 
 print(result.to_string())
 ```
+
+<details>
+<summary>위 예시 코드 흐름도 보기</summary>
+
+```mermaid
+flowchart TD
+    A["분류 예시"] --> B["임베딩 생성 후 Chroma에 저장"]
+    C["prompt.invoke(): 환불 문의"] --> D["질문 임베딩으로 후보 예시 5개 검색"]
+    B --> D
+    D --> E["MMR: 관련성과 다양성을 고려해 3개 선택"]
+    E --> F["example_prompt로 예시 변환"]
+    F --> G["prefix·예시·질문을 결합한 StringPromptValue 생성"]
+```
+
+</details>
+
 - 유사도뿐만 아니라 예시의 다양성까지 고려하여 선택하는 방식이다.
 - **MMR 알고리즘**
     - 정보 검색과 문서 요약을 할 때, 다양성과 관련성을 모두 고려하여 결과를 선택하는 방법이다.
@@ -439,6 +612,24 @@ response = chain.invoke({"input": question})
 print("\n=== LLM 응답 ===")
 print(response)
 ```
+
+<details>
+<summary>위 예시 코드 흐름도 보기</summary>
+
+```mermaid
+flowchart TD
+    A["분류 예시 임베딩을 Chroma에 저장"] --> B["질문과 유사한 예시 3개 선택"]
+    Q["사용자 환불 문의"] --> B
+    B --> C["example_prompt로 human·ai 예시 메시지 생성"]
+    C --> D["system·예시 대화·현재 질문으로 ChatPromptValue 생성"]
+    D --> E["ChatOpenAI 호출"]
+    E --> F["AIMessage: 문의 분류 응답 생성"]
+    F --> G["StrOutputParser: 응답 텍스트 추출"]
+    G --> H["최종 분류 결과 문자열 생성"]
+```
+
+</details>
+
 
 - FewShotPromptTemplate과 매우 비슷하지만, ChatMessage라는 요소가 추가된다.
 - ChatMessagePromptTemplate과 같이 지시 사항(instruction), 입력(input), 답변(answer)으로 구성된다.
